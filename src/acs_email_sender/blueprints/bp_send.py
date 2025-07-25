@@ -4,7 +4,6 @@ import logging
 import azure.functions as func
 from pydantic import ValidationError
 
-import src.acs_email_sender.config as config
 from src.acs_email_sender.services.email_service import EmailService
 from src.acs_email_sender.models.email_message import EmailMessage
 
@@ -12,13 +11,10 @@ logger = logging.getLogger(__name__)
 
 bp = func.Blueprint()
 
-INPUT_QUEUE_NAME = config.INPUT_QUEUE_NAME
 
-
-@bp.function_name(name="ACS Email Sender")
 @bp.queue_trigger(
     arg_name="msg",
-    queue_name=INPUT_QUEUE_NAME,
+    queue_name="%INPUT_QUEUE_NAME%",
     connection="AzureWebJobsStorage"
 )
 def acs_email_sender(msg: func.QueueMessage):
