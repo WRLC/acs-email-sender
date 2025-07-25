@@ -5,6 +5,7 @@
     "AzureWebJobsStorage": "UseDevelopmentStorage=true",
     "ACS_CONNECTION_STRING": "",
     "ACS_ENDPOINT": "",
-    "SENDER_EMAIL": ""
+    "SENDER_EMAIL": "",
+    "QUEUE_NAME": ""
   }
 }

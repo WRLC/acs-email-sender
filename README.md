@@ -1,6 +1,6 @@
 # ACS Email Sender
 
-An Azure Function App to send emails via Azure Communication Services (ACS), triggered by a message on an Azure Storage Queue.
+Azure Function to send emails via Azure Communication Services (ACS), triggered by a queue message in the function's storage account.
 
 ## Local Development
 
