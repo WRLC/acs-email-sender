@@ -1,0 +1,23 @@
+[project]
+name = "acs-email-sender"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "Tom Boone",email = "tbc@tomboone.com"}
+]
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "azure-communication-email (>=1.0.0,<2.0.0)",
+    "azure-functions (>=1.23.0,<2.0.0)",
+    "azure-identity (>=1.23.1,<2.0.0)",
+    "pydantic (>=2.11.7,<3.0.0)",
+    "pytest (>=8.4.1,<9.0.0)"
+]
+
+[tool.poetry]
+package-mode = false
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
