@@ -6,6 +6,6 @@
     "ACS_CONNECTION_STRING": "",
     "ACS_ENDPOINT": "",
     "SENDER_EMAIL": "",
-    "INPUT_QUEUE_NAME": ""
+    "INPUT_BLOB_CONTAINER": ""
   }
 }
