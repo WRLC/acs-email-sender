@@ -1,5 +1,5 @@
 """Pydantic models for data validation and schema definition."""
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 class EmailMessage(BaseModel):
     """

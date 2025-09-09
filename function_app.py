@@ -1,7 +1,7 @@
 """ Azure Function """
 import azure.functions as func
 
-from src.acs_email_sender.blueprints.bp_send import bp as bp_send
+from acs_email_sender.blueprints.bp_send import bp as bp_send
 
 app = func.FunctionApp()
 

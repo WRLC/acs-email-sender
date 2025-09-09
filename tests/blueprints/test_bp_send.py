@@ -5,8 +5,8 @@ from unittest.mock import patch, MagicMock
 
 import azure.functions as func
 
-from src.acs_email_sender.blueprints.bp_send import acs_email_sender
-from src.acs_email_sender.models.email_message import EmailMessage
+from acs_email_sender.blueprints.bp_send import acs_email_sender
+from acs_email_sender.models.email_message import EmailMessage
 
 
 # noinspection PyMethodMayBeStatic

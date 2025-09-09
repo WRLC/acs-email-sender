@@ -12,11 +12,21 @@ dependencies = [
     "azure-functions (>=1.23.0,<2.0.0)",
     "azure-identity (>=1.23.1,<2.0.0)",
     "pydantic (>=2.11.7,<3.0.0)",
-    "pytest (>=8.4.1,<9.0.0)"
+    "wrlc-azure-storage-service (>=0.1.1,<0.2.0)",
 ]
 
-[tool.poetry]
-package-mode = false
+[tool.poetry.group.dev.dependencies]
+mypy = "^1.17.1"
+ruff = "^0.12.9"
+bandit = "^1.8.6"
+pre-commit = "^4.3.0"
+pytest = "^8.4.1"
+pytest-mock = "^3.14.0"
+
+[[tool.poetry.source]]
+name = "wrlc-python"
+url = "https://pkgs.dev.azure.com/WRLCdev/Python/_packaging/wrlc-python/pypi/simple/"
+priority = "primary"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
