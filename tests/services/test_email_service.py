@@ -4,8 +4,8 @@ from unittest.mock import patch, MagicMock
 
 from azure.core.exceptions import HttpResponseError
 
-from src.acs_email_sender.services.email_service import EmailService
-from src.acs_email_sender.models.email_message import EmailMessage
+from acs_email_sender.services.email_service import EmailService
+from acs_email_sender.models.email_message import EmailMessage
 
 
 # noinspection PyUnusedLocal

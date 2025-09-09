@@ -7,8 +7,8 @@ from azure.core.exceptions import HttpResponseError, ServiceRequestError
 from azure.core.polling import LROPoller
 from azure.identity import DefaultAzureCredential
 
-import src.acs_email_sender.config as config
-from src.acs_email_sender.models.email_message import EmailMessage
+import acs_email_sender.config as config
+from acs_email_sender.models.email_message import EmailMessage
 
 logger = logging.getLogger(__name__)
 
