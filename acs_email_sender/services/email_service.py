@@ -2,13 +2,13 @@
 import logging
 from typing import Any, MutableMapping
 
+from acs_email_sender_message_model import EmailMessage  # type: ignore
 from azure.communication.email import EmailClient
 from azure.core.exceptions import HttpResponseError, ServiceRequestError
 from azure.core.polling import LROPoller
 from azure.identity import DefaultAzureCredential
 
 import acs_email_sender.config as config
-from acs_email_sender.models.email_message import EmailMessage
 
 logger = logging.getLogger(__name__)
 
@@ -16,12 +16,12 @@ logger = logging.getLogger(__name__)
 class EmailService:
     """ Client functions for ACS """
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.connection_string: str | None = config.ACS_CONNECTION_STRING
         self.endpoint: str | None = config.ACS_ENDPOINT
         self.credential: DefaultAzureCredential = DefaultAzureCredential()
 
-    def send_email(self, email: EmailMessage):
+    def send_email(self, email: EmailMessage) -> None:
         """
         Send an email to the specified recipients using a validated EmailMessage object.
 
@@ -31,7 +31,11 @@ class EmailService:
         to_recipients = [{"address": addr} for addr in email.to]
         cc_recipients = [{"address": addr} for addr in email.cc] if email.cc else []
 
-        client: EmailClient = self.create_email_client()
+        client: EmailClient | None = self.create_email_client()
+
+        if not client:
+            logger.error("Could not create email client")
+            return
 
         message: dict[str, Any] = {
             "content": {
@@ -78,19 +82,24 @@ class EmailService:
             logger.exception(f"Failed to send email via ACS: {email_err}")
             raise email_err
 
-    def create_email_client(self) -> EmailClient:
+    def create_email_client(self) -> EmailClient | None:
         """
         Create an email client using the Azure Communication Service (ACS) connection string or endpoint.
 
         Returns:
             EmailClient: The initialized email client.
         """
+        email_client: EmailClient
+
         if self.connection_string:
             logger.debug("Using ACS Connection String.")
-            email_client: EmailClient = EmailClient.from_connection_string(self.connection_string)
+            email_client = EmailClient.from_connection_string(self.connection_string)
         else:
             logger.debug("Using ACS Endpoint and DefaultAzureCredential.")
+            if self.endpoint is None:
+                logger.error("No endpoint provided.")
+                return None
             # noinspection PyTypeChecker
-            email_client: EmailClient = EmailClient(endpoint=self.endpoint, credential=self.credential)
+            email_client = EmailClient(endpoint=self.endpoint, credential=self.credential)
 
         return email_client

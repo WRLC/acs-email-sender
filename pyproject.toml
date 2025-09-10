@@ -13,6 +13,7 @@ dependencies = [
     "azure-identity (>=1.23.1,<2.0.0)",
     "pydantic (>=2.11.7,<3.0.0)",
     "wrlc-azure-storage-service (>=0.1.1,<0.2.0)",
+    "acs-email-sender-message-model (>=0.1.0,<0.2.0)",
 ]
 
 [tool.poetry.group.dev.dependencies]

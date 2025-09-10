@@ -2,13 +2,13 @@
 import logging
 import json
 
+from acs_email_sender_message_model import EmailMessage  # type: ignore
 import azure.functions as func
 from pydantic import ValidationError
 from wrlc_azure_storage_service import StorageService  # type: ignore
 
 from acs_email_sender.config import INPUT_MESSAGE_QUEUE, STORAGE_CONNECTION_STRING_SETTING_NAME, INPUT_BLOB_CONTAINER
 from acs_email_sender.services.email_service import EmailService
-from acs_email_sender.models.email_message import EmailMessage
 
 logger = logging.getLogger(__name__)
 
