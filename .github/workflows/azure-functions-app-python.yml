@@ -4,6 +4,11 @@ name: Deploy to Azure Function
 on:
   push:
     branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
 
 env:
   ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
