@@ -6,7 +6,7 @@ import azure.functions as func
 from pydantic import ValidationError
 from wrlc_azure_storage_service import StorageService  # type: ignore
 
-from acs_email_sender.config import INPUT_MESSAGE_QUEUE, ACS_CONNECTION_STRING_SETTING_NAME, INPUT_BLOB_CONTAINER
+from acs_email_sender.config import INPUT_MESSAGE_QUEUE, STORAGE_CONNECTION_STRING_SETTING_NAME, INPUT_BLOB_CONTAINER
 from acs_email_sender.services.email_service import EmailService
 from acs_email_sender.models.email_message import EmailMessage
 
@@ -18,7 +18,7 @@ bp = func.Blueprint()
 @bp.queue_trigger(
     arg_name="inputmsg",
     queue_name=INPUT_MESSAGE_QUEUE,
-    connection=ACS_CONNECTION_STRING_SETTING_NAME
+    connection=STORAGE_CONNECTION_STRING_SETTING_NAME
 )
 def acs_email_sender(inputmsg: func.QueueMessage):
     """ Queue trigger to send an email """

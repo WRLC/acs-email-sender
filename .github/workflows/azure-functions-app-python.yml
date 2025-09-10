@@ -1,4 +1,4 @@
-#file: noinspection UndefinedAction
+#file: noinspection UndefinedAction,UndefinedParamsPresent
 name: Deploy to Azure Function
 
 on:
@@ -6,14 +6,20 @@ on:
     branches: ["main"]
 
 env:
-  AZURE_FUNCTIONAPP_NAME: 'acs-email-sender'
-  AZURE_FUNCTIONAPP_PACKAGE_PATH: '.'
+  ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+  ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
+  ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+  ARM_USE_OIDC: true
   PYTHON_VERSION: '3.12'
 
 jobs:
-  build-and-deploy:
+  build:
+    name: Build app
     runs-on: ubuntu-latest
-    environment: Azure (stage)
+
+    env:
+      PAT_DEVOPS_TOKEN: ${{ secrets.PAT_DEVOPS_TOKEN }}
+
     steps:
     - name: 'Checkout GitHub Action'
       uses: actions/checkout@v4
@@ -26,18 +32,63 @@ jobs:
     - name: Install Poetry
       uses: snok/install-poetry@v1
 
-    - name: Install poetry-plugin-export
-      run: poetry self add poetry-plugin-export
+    - name: Configure Poetry to build locally
+      run: poetry config virtualenvs.in-project true
 
-    - name: Export dependencies to requirements.txt
-      run: poetry export -f requirements.txt --output requirements.txt --without-hashes
+    - name: Configure Poetry for private repo
+      run: poetry config http-basic.wrlc-python pat ${{ env.PAT_DEVOPS_TOKEN }}
 
-    - name: 'Run Azure Functions Action'
-      uses: Azure/functions-action@v1
-      id: fa
+    - name: Build with Poetry
+      run: poetry install --without dev
+
+    - name: Construct deployment artifact
+      run: |
+        VENV_PATH=$(poetry env info --path)
+        mkdir -p deployment_package/.python_packages/lib/site-packages
+        cp -r $VENV_PATH/lib/python3.12/site-packages/* deployment_package/.python_packages/lib/site-packages/
+        cp function_app.py host.json deployment_package/
+        cp -r acs_email_sender deployment_package/
+
+    - name: Zip artifact for deployment
+      run: |
+        cd deployment_package
+        zip -r ../python-app.zip .
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
       with:
-        app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
-        package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
-        publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }}
-        scm-do-build-during-deployment: true
-        enable-oryx-build: true
+        name: python-app
+        path: python-app.zip
+
+  deploy:
+    name: Deploy to Azure
+    runs-on: ubuntu-latest
+    environment: staging
+
+    env:
+      AZURE_FUNCTIONAPP_NAME: 'acs-email-sender'
+      PACKAGE_NAME: 'app'
+      DEPLOYMENT_SLOT_NAME: 'stage'
+
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: python-app
+
+      - name: Log in to Azure
+        uses: azure/login@v1
+        with:
+          client-id: ${{ env.ARM_CLIENT_ID }}
+          tenant-id: ${{ env.ARM_TENANT_ID }}
+          subscription-id: ${{ env.ARM_SUBSCRIPTION_ID }}
+
+      - name: Unzip deployment artifact
+        run: unzip python-app.zip -d ${{ env.PACKAGE_NAME }}
+
+      - name: Deploy to Stage Slot
+        uses: Azure/functions-action@v1
+        with:
+          app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
+          slot-name: ${{ env.DEPLOYMENT_SLOT_NAME }}
+          package: ${{ env.PACKAGE_NAME }}
